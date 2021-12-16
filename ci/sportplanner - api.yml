@@ -12,7 +12,6 @@ variables:
   azureSubscription: '2d117bf5-ec1c-4df8-a668-43a6a57860d3'
   functionAppName: 'sportplannerapi'
   vmImageName: 'windows-2022'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/SportPlannerApi'
   buildConfiguration: release
 
 stages:
@@ -29,7 +28,7 @@ stages:
     - task: DotNetCoreCLI@2
       inputs:
         command: 'build'
-        projects: 'SportPlannerApi\*.csproj'
+        projects: '$(functionAppName)\*.csproj'
         arguments: '-c $(buildConfiguration)'
       displayName: 'Build $(buildConfiguration)'
 
@@ -37,7 +36,7 @@ stages:
       inputs:
         command: 'publish'
         publishWebProjects: false
-        projects: 'SportPlannerApi\*.csproj'
+        projects: '$(functionAppName)\*.csproj'
         arguments: '--no-build --no-restore -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
         zipAfterPublish: true
       displayName: 'Publish $(buildConfiguration)'
