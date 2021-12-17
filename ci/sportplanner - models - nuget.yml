@@ -1,0 +1,34 @@
+name: 1.0$(Rev:.r)
+
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - SportPlanner.ModelsDto
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  BuildConfiguration: release
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: Pack nuget
+  inputs:
+    command: 'pack'
+    packagesToPack: 'SportPlanner.ModelsDto/*.csproj'
+    versioningScheme: 'byBuildNumber'
+
+- task: NuGetAuthenticate@0
+  displayName: 'NuGet Authenticate'
+  
+- task: DotNetCoreCLI@2
+  displayName: Push nuget
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'mattiaslijhome/SportPlanner.ModelsDto'
