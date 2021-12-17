@@ -31,4 +31,4 @@ steps:
     command: 'push'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
     nuGetFeedType: 'internal'
-    publishVstsFeed: 'mattiaslijhome/SportPlanner.ModelsDto'
+    publishVstsFeed: 'sportplanner/SportPlanner.ModelsDto'
