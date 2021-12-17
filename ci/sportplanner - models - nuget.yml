@@ -9,7 +9,7 @@ trigger:
     - SportPlanner.ModelsDto
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-2022
 
 variables:
   BuildConfiguration: release
