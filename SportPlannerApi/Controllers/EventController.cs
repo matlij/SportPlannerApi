@@ -1,17 +1,3 @@
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Extensions.Logging;
-using SportPlanner.DataLayer;
-using SportPlanner.DataLayer.Models;
-using SportPlanner.ModelsDto;
-using System;
-using System.Threading.Tasks;
-using SportPlannerApi.Helpers;
-using SportPlanner.DataLayer.Specifications;
-using System.Linq;
-using SportPlanner.DataLayer.Specifications.Abstract;
-using System.Web;
-
 namespace SportPlannerFunctionApi;
 
 public class EventController
@@ -68,7 +54,7 @@ public class EventController
     {
         var requestBody = await req.ReadFromJsonAsync<EventDto>();
 
-        var crudResult = await _dataAccess.Update(new GetEventByIdSpecification(id), requestBody);
+        var crudResult = await _dataAccess.Update(id, requestBody);
 
         return req.ToResponse(crudResult, _logger);
     }

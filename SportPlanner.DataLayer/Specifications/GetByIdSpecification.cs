@@ -1,12 +1,11 @@
 ﻿using SportPlanner.DataLayer.Models;
 using SportPlanner.DataLayer.Specifications.Abstract;
-using System;
 
 namespace SportPlanner.DataLayer.Specifications
 {
-    public class GetUserByIdSpecification : SpecificationBase<User>
+    public class GetByIdSpecification<T> : SpecificationBase<T> where T : BaseEntity
     {
-        public GetUserByIdSpecification(Guid id) : base(e => e.Id == id)
+        public GetByIdSpecification(Guid id) : base(e => e.Id == id)
         {
         }
     }

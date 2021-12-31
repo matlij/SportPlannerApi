@@ -1,15 +1,3 @@
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Extensions.Logging;
-using SportPlanner.DataLayer;
-using SportPlanner.DataLayer.Models;
-using SportPlanner.ModelsDto;
-using System;
-using System.Threading.Tasks;
-using SportPlannerApi.Helpers;
-using SportPlanner.DataLayer.Specifications;
-using System.Linq;
-
 namespace SportPlannerFunctionApi;
 
 public class UserController
@@ -35,7 +23,7 @@ public class UserController
     [Function("GetUser")]
     public async Task<HttpResponseData> GetUser([HttpTrigger(AuthorizationLevel.Function, "get", Route = "user/{id}")] HttpRequestData req, Guid id)
     {
-        var entity = (await _dataAccess.Get<UserDto>(new GetUserByIdSpecification(id)))?.SingleOrDefault();
+        var entity = (await _dataAccess.Get<UserDto>(new GetByIdSpecification<User>(id)))?.SingleOrDefault();
 
         if (entity is null)
         {
@@ -59,7 +47,7 @@ public class UserController
     {
         var requestBody = await req.ReadFromJsonAsync<UserDto>();
 
-        var crudResult = await _dataAccess.Update(new GetUserByIdSpecification(id), requestBody);
+        var crudResult = await _dataAccess.Update(id, requestBody);
 
         return req.ToResponse(crudResult, _logger);
     }

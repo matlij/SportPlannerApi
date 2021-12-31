@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using SportPlanner.DataLayer.Data;
 using SportPlanner.DataLayer.Models;
+using SportPlanner.DataLayer.Specifications;
 using SportPlanner.DataLayer.Specifications.Abstract;
 using SportPlanner.ModelsDto.Enums;
-using System.Data.SqlClient;
 
 namespace SportPlanner.DataLayer;
 public class Repository<T> : IRepository<T> where T : BaseEntity
@@ -25,6 +25,12 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         var entities = await _entities.Take(limit).ToListAsync();
 
         return _mapper.Map<IEnumerable<Tdto>>(entities);
+    }
+
+    public async Task<Tdto?> Get<Tdto>(Guid id)
+    {
+        var spec = new GetByIdSpecification<T>(id);
+       return (await Get<Tdto>(spec)).SingleOrDefault();
     }
 
     public async Task<IEnumerable<Tdto>> Get<Tdto>(ISpecification<T> spec, int limit = 100)
@@ -51,17 +57,16 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
             _context.SaveChanges();
         }
         catch (DbUpdateException e)
-        when (e.InnerException is SqlException sqlEx && (sqlEx.Number == 2601 || sqlEx.Number == 2627))
+        when (e.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx && (sqlEx.Number == 2601 || sqlEx.Number == 2627))
         {
             return (CrudResult.AlreadyExists, _mapper.Map<Tdto>(entity));
         }
-
         return (CrudResult.Ok, _mapper.Map<Tdto>(entity));
     }
 
-    public async Task<CrudResult> Update<Tdto>(ISpecification<T> spec, Tdto entityDto)
+    public async Task<CrudResult> Update<Tdto>(Guid id, Tdto entityDto)
     {
-        var trackedEntity = (await Get<T>(spec)).SingleOrDefault();
+        var trackedEntity = await Get<T>(id);
         if (trackedEntity is null)
         {
             return CrudResult.NotFound;
@@ -74,7 +79,7 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
 
     public async Task<CrudResult> Delete(Guid id)
     {
-        var entity = await _entities.FindAsync(id);
+        var entity = await Get<T>(id);
         if (entity is null)
         {
             return CrudResult.NotFound;

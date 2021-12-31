@@ -5,9 +5,13 @@ VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportPlannerApi", "SportPlannerApi\SportPlannerApi.csproj", "{E260DB0B-97FA-4924-A8E4-AA7B8888603F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportPlanner.DataLayer", "SportPlanner.DataLayer\SportPlanner.DataLayer.csproj", "{5D7820B8-86C4-415A-9B7E-6360A9A5F908}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportPlanner.DataLayer", "SportPlanner.DataLayer\SportPlanner.DataLayer.csproj", "{5D7820B8-86C4-415A-9B7E-6360A9A5F908}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportPlanner.ModelsDto", "SportPlanner.ModelsDto\SportPlanner.ModelsDto.csproj", "{E76C6910-E168-40AD-8E17-BF54D00F4A67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportPlanner.ModelsDto", "SportPlanner.ModelsDto\SportPlanner.ModelsDto.csproj", "{E76C6910-E168-40AD-8E17-BF54D00F4A67}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4488FE12-659C-4F84-BBB4-4138AC4BD96C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportPlanner.DataLayer.Tests", "SportPlanner.DataLayer.Tests\SportPlanner.DataLayer.Tests.csproj", "{656C9975-E8FE-4372-BC5F-F0D933624AE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,9 +31,16 @@ Global
 		{E76C6910-E168-40AD-8E17-BF54D00F4A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E76C6910-E168-40AD-8E17-BF54D00F4A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E76C6910-E168-40AD-8E17-BF54D00F4A67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{656C9975-E8FE-4372-BC5F-F0D933624AE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{656C9975-E8FE-4372-BC5F-F0D933624AE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{656C9975-E8FE-4372-BC5F-F0D933624AE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{656C9975-E8FE-4372-BC5F-F0D933624AE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{656C9975-E8FE-4372-BC5F-F0D933624AE7} = {4488FE12-659C-4F84-BBB4-4138AC4BD96C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F0E0E56-AE7C-4293-AEB2-161925C0753F}

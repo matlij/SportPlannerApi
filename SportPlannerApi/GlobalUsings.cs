@@ -1,0 +1,12 @@
+﻿global using Microsoft.Azure.Functions.Worker;
+global using Microsoft.Azure.Functions.Worker.Http;
+global using Microsoft.Extensions.Logging;
+global using SportPlanner.DataLayer;
+global using SportPlanner.DataLayer.Models;
+global using SportPlanner.ModelsDto;
+global using System;
+global using System.Threading.Tasks;
+global using SportPlannerApi.Helpers;
+global using SportPlanner.DataLayer.Specifications;
+global using System.Linq;
+global using System.Web;

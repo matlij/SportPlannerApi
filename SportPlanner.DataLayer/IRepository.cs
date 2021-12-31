@@ -14,6 +14,6 @@ namespace SportPlanner.DataLayer
 
         Task<CrudResult> Delete(Guid id);
 
-        Task<CrudResult> Update<Tdto>(ISpecification<T> spec, Tdto entityDto);
+        Task<CrudResult> Update<Tdto>(Guid id, Tdto entityDto);
     }
 }
