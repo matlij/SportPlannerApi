@@ -24,7 +24,7 @@ public class Program
                 s.TryAddTransient<IRepository<User>, Repository<User>>();
                 s.TryAddTransient<IRepository<Event>, Repository<Event>>();
                 s.AddAutoMapper(typeof(SportPlannerProfile));
-                s.AddDbContext<SportPlannerContext>(o => o.UseSqlServer("Server=sportplannersqlserver.database.windows.net,1433;Database=sportplannersqldb;UID=a;Authentication=Active Directory Interactive"));
+                s.AddDbContext<SportPlannerContext>(o => o.UseSqlServer(Environment.GetEnvironmentVariable("dbConnectionString")));
             });
     }
 }
