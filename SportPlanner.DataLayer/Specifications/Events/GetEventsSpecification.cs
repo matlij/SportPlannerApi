@@ -2,7 +2,7 @@
 using SportPlanner.DataLayer.Specifications.Abstract;
 using System.Linq.Expressions;
 
-namespace SportPlanner.DataLayer.Specifications
+namespace SportPlanner.DataLayer.Specifications.Events
 {
     public class GetEventsSpecification : SpecificationBase<Event>
     {

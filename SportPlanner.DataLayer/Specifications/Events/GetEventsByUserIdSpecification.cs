@@ -1,7 +1,7 @@
 ﻿using SportPlanner.DataLayer.Models;
 using SportPlanner.DataLayer.Specifications.Abstract;
 
-namespace SportPlanner.DataLayer.Specifications
+namespace SportPlanner.DataLayer.Specifications.Events
 {
 
     public class GetEventsByUserIdSpecification : SpecificationBase<Event>

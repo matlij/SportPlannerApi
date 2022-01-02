@@ -1,3 +1,5 @@
+using SportPlanner.DataLayer.Specifications.Events;
+
 namespace SportPlannerFunctionApi;
 
 public class EventController
@@ -22,7 +24,7 @@ public class EventController
 
         var entities = string.IsNullOrEmpty(userId)
             ? await _dataAccess.GetAll<EventDto>(limitParsed)
-            : await _dataAccess.Get<EventDto>(new GetEventsByUserIdSpecification(Guid.Parse(userId)), limitParsed) ;
+            : await _dataAccess.Get<EventDto>(new GetEventsByUserIdSpecification(Guid.Parse(userId)), limitParsed);
 
         return await req.OkObjectResponse(entities);
     }
@@ -53,8 +55,9 @@ public class EventController
     public async Task<HttpResponseData> UpdateEvent([HttpTrigger(AuthorizationLevel.Function, "put", Route = "event/{id}")] HttpRequestData req, Guid id)
     {
         var requestBody = await req.ReadFromJsonAsync<EventDto>();
+        requestBody.Id = id;
 
-        var crudResult = await _dataAccess.Update(id, requestBody);
+        var crudResult = await _dataAccess.Update(new GetEventByIdSpecification(id), requestBody);
 
         return req.ToResponse(crudResult, _logger);
     }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using SportPlanner.DataLayer.Data;
 using SportPlanner.DataLayer.Profiles;
+using SportPlanner.DataLayer.Services;
 
 namespace SportPlannerApi;
 
@@ -23,6 +24,7 @@ public class Program
             {
                 s.TryAddTransient<IRepository<User>, Repository<User>>();
                 s.TryAddTransient<IRepository<Event>, Repository<Event>>();
+                s.TryAddTransient<IUserService, UserService>();
                 s.AddAutoMapper(typeof(SportPlannerProfile));
                 s.AddDbContext<SportPlannerContext>(o => o.UseSqlServer(Environment.GetEnvironmentVariable("dbConnectionString")));
             });

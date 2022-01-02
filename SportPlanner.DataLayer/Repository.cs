@@ -27,10 +27,9 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         return _mapper.Map<IEnumerable<Tdto>>(entities);
     }
 
-    public async Task<Tdto?> Get<Tdto>(Guid id)
+    public async Task<Tdto?> GetById<Tdto>(GetByIdSpecification<T> spec)
     {
-        var spec = new GetByIdSpecification<T>(id);
-       return (await Get<Tdto>(spec)).SingleOrDefault();
+        return (await Get<Tdto>(spec)).SingleOrDefault();
     }
 
     public async Task<IEnumerable<Tdto>> Get<Tdto>(ISpecification<T> spec, int limit = 100)
@@ -47,26 +46,27 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         return _mapper.Map<IEnumerable<Tdto>>(entities);
     }
 
-    public async Task<(CrudResult, Tdto)> Add<Tdto>(Tdto entityDto)
+    public async Task<(CrudResult, Tdto)> Add<Tdto>(Tdto entityDto, ISpecification<T>? customDuplicateSpec = null)
     {
         var entity = _mapper.Map<T>(entityDto);
+        
+        var duplicateSpec = customDuplicateSpec ?? new GetByIdSpecification<T>(entity.Id);
+        var storedEntity = (await Get<Tdto>(duplicateSpec)).SingleOrDefault();
+        if (storedEntity != null)
+        {
+            return (CrudResult.AlreadyExists, _mapper.Map<Tdto>(storedEntity));
+        }
+        
         await _entities.AddAsync(entity);
 
-        try
-        {
-            _context.SaveChanges();
-        }
-        catch (DbUpdateException e)
-        when (e.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx && (sqlEx.Number == 2601 || sqlEx.Number == 2627))
-        {
-            return (CrudResult.AlreadyExists, _mapper.Map<Tdto>(entity));
-        }
+        _context.SaveChanges();
+
         return (CrudResult.Ok, _mapper.Map<Tdto>(entity));
     }
 
-    public async Task<CrudResult> Update<Tdto>(Guid id, Tdto entityDto)
+    public async Task<CrudResult> Update<Tdto>(GetByIdSpecification<T> spec, Tdto entityDto)
     {
-        var trackedEntity = await Get<T>(id);
+        var trackedEntity = await GetById<T>(spec);
         if (trackedEntity is null)
         {
             return CrudResult.NotFound;
@@ -79,7 +79,7 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
 
     public async Task<CrudResult> Delete(Guid id)
     {
-        var entity = await Get<T>(id);
+        var entity = await GetById<T>(new GetByIdSpecification<T>(id)); //TODO TEST
         if (entity is null)
         {
             return CrudResult.NotFound;
