@@ -18,8 +18,8 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\SportPlanner.DataLayer\SportPlanner.DataLayer.csproj" />
 		<ProjectReference Include="..\SportPlanner.ModelsDto\SportPlanner.ModelsDto.csproj" />
+		<ProjectReference Include="..\SportPlanner.Repository\SportPlanner.Repository.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="host.json">

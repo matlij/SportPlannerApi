@@ -21,7 +21,7 @@ namespace SportPlanner.DataLayer.Profiles
                 {
                     foreach (var item in dest.Users)
                     {
-                        item.EventId = src.Id;
+                        //item.EventId = src.Id;
                     }
                 });
 

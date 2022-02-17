@@ -38,8 +38,6 @@ public class UserService : IUserService
         foreach (var @event in events)
         {
             var result = await AddUserToEvent(user, @event);
-
-            _logger.LogDebug($"Add user to Event {@event.Id} result: {result}");
         }
     }
 
@@ -57,7 +55,7 @@ public class UserService : IUserService
 
         @event.Users = users;
 
-        return _eventRepository.Update(new GetEventByIdSpecification(@event.Id), @event);
+        return _eventRepository.Update(new GetEventByIdSpecification(Guid.Empty), @event);
     }
 }
 

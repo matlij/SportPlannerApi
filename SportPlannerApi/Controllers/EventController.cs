@@ -1,16 +1,18 @@
-using SportPlanner.DataLayer.Specifications.Events;
+using SportPlanner.Repository.Interfaces;
+using SportPlanner.Repository.Models.Static;
+using System;
 
 namespace SportPlannerFunctionApi;
 
 public class EventController
 {
     private readonly ILogger<EventController> _logger;
-    private readonly IRepository<Event> _dataAccess;
+    private readonly IEventService _eventService;
 
-    public EventController(ILoggerFactory loggerFactory, IRepository<Event> dataAccess)
+    public EventController(ILoggerFactory loggerFactory, IEventService eventService)
     {
         _logger = loggerFactory.CreateLogger<EventController>();
-        _dataAccess = dataAccess ?? throw new ArgumentNullException(nameof(dataAccess));
+        _eventService = eventService ?? throw new ArgumentNullException(nameof(eventService));
     }
 
     [Function("GetAllEvents")]
@@ -22,51 +24,48 @@ public class EventController
         string limit = query["limit"];
         var limitParsed = string.IsNullOrEmpty(limit) ? 100 : int.Parse(limit);
 
-        var entities = string.IsNullOrEmpty(userId)
-            ? await _dataAccess.GetAll<EventDto>(limitParsed)
-            : await _dataAccess.Get<EventDto>(new GetEventsByUserIdSpecification(Guid.Parse(userId)), limitParsed);
-
-        return await req.OkObjectResponse(entities);
+        var result = await _eventService.GetAll();
+        return await req.OkObjectResponse(result);
     }
 
-    [Function("GetEvent")]
-    public async Task<HttpResponseData> GetEvent([HttpTrigger(AuthorizationLevel.Function, "get", Route = "event/{id}")] HttpRequestData req, Guid id)
-    {
-        var entity = (await _dataAccess.Get<EventDto>(new GetEventByIdSpecification(id)))?.SingleOrDefault();
+    //[Function("GetEvent")]
+    //public async Task<HttpResponseData> GetEvent([HttpTrigger(AuthorizationLevel.Function, "get", Route = "event/{id}")] HttpRequestData req, DateTime id)
+    //{
+    //    var entity = await _eventService.Get<EventDto>(CloudTableConstants.PartitionKeyEvent, id.Ticks.ToString());
 
-        if (entity is null)
-        {
-            return req.NotFoundResponse();
-        }
+    //    if (entity is null)
+    //    {
+    //        return req.NotFoundResponse();
+    //    }
 
-        return await req.OkObjectResponse(entity);
-    }
+    //    return await req.OkObjectResponse(entity);
+    //}
 
     [Function("AddEvent")]
     public async Task<HttpResponseData> AddEvent([HttpTrigger(AuthorizationLevel.Function, "post", Route = "event")] HttpRequestData req)
     {
         var requestBody = await req.ReadFromJsonAsync<EventDto>();
-        var (crudResult, _) = await _dataAccess.Add(requestBody);
+        var (crudResult, _) = await _eventService.Add(requestBody);
 
         return req.ToResponse(crudResult, _logger);
     }
 
-    [Function("UpdateEvent")]
-    public async Task<HttpResponseData> UpdateEvent([HttpTrigger(AuthorizationLevel.Function, "put", Route = "event/{id}")] HttpRequestData req, Guid id)
-    {
-        var requestBody = await req.ReadFromJsonAsync<EventDto>();
-        requestBody.Id = id;
+    //[Function("UpdateEvent")]
+    //public async Task<HttpResponseData> UpdateEvent([HttpTrigger(AuthorizationLevel.Function, "put", Route = "event/{id}")] HttpRequestData req, DateTime id)
+    //{
+    //    var requestBody = await req.ReadFromJsonAsync<EventDto>();
+    //    requestBody.Date = id;
 
-        var crudResult = await _dataAccess.Update(new GetEventByIdSpecification(id), requestBody);
+    //    var crudResult = await _eventService.Upsert(requestBody);
 
-        return req.ToResponse(crudResult, _logger);
-    }
+    //    return req.ToResponse(crudResult, _logger);
+    //}
 
-    [Function("DeleteEvent")]
-    public async Task<HttpResponseData> DeleteEvent([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "event/{id}")] HttpRequestData req, Guid id)
-    {
-        var crudResult = await _dataAccess.Delete(id);
+    //[Function("DeleteEvent")]
+    //public async Task<HttpResponseData> DeleteEvent([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "event/{id}")] HttpRequestData req, DateTime id)
+    //{
+    //    var crudResult = await _eventService.Delete(CloudTableConstants.PartitionKeyEvent, id.Ticks.ToString());
 
-        return req.ToResponse(crudResult, _logger);
-    }
+    //    return req.ToResponse(crudResult, _logger);
+    //}
 }
