@@ -11,7 +11,7 @@ trigger:
 variables:
   azureSubscription: '2d117bf5-ec1c-4df8-a668-43a6a57860d3'
   functionAppName: 'sportplannerapi'
-  vmImageName: 'windows-2022'
+  vmImageName: 'ubuntu-latest'
   buildConfiguration: release
 
 stages:
@@ -66,5 +66,5 @@ stages:
             inputs:
               azureSubscription: '$(azureSubscription)'
               appType: functionApp
-              appName: $(functionAppName)
-              package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/SportPlannerApi.zip'
+              appName: bandydosapi
+              package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/$(functionAppName).zip'
