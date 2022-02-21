@@ -6,7 +6,14 @@ namespace SportPlanner.ModelsDto
     {
         public Guid UserId { get; set; }
         public string UserName { get; set; } = string.Empty;
-        public int UserReply { get; set; }
+        public UserReply UserReply { get; set; }
         public bool IsOwner { get; set; }
+    }
+
+    public enum UserReply
+    {
+        Unknown = 0,
+        Going = 1,
+        NotGoing = 2
     }
 }
