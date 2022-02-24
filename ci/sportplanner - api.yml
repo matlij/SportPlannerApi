@@ -7,6 +7,9 @@ trigger:
   branches:
     include:
     - master
+  paths: 
+    exclude:
+    - ci
 
 variables:
   azureSubscription: '2d117bf5-ec1c-4df8-a668-43a6a57860d3'
