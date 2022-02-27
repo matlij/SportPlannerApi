@@ -3,18 +3,14 @@ using SportPlanner.Repository.Models.Static;
 
 namespace SportPlanner.Repository.Models
 {
-    public class Event : TableEntityBase
+    public class Event : TableEntity
     {
-        public Event()
-        {
-            PartitionKey = CloudTableConstants.PartitionKeyEvent;
-        }
-
+        public DateTimeOffset Date { get; set; }
         public int EventType { get; set; }
         public Guid AddressId { get; set; } = Guid.Empty;
     }
 
-    public class EventUser : TableEntityBase
+    public class EventUser : TableEntity
     {
         public string UserName { get; set; } = string.Empty;
         public int UserReply { get; set; }

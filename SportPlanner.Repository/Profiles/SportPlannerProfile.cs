@@ -12,7 +12,8 @@ namespace SportPlanner.Repository.Profiles
 
             CreateMap<EventDto, Event>()
                 .ForMember(dest => dest.AddressId, opt => opt.MapFrom(src => src.Address != null ? (Guid?)src.Address.Id : null))
-                .ForMember(dest => dest.RowKey, opt => opt.MapFrom(src => src.Date.Ticks.ToString()));
+                .ForMember(dest => dest.RowKey, opt => opt.MapFrom(src => src.Id.ToString()))
+                .ForMember(dest => dest.PartitionKey, opt => opt.MapFrom(src => src.Date.Date.ToShortDateString()));
 
             CreateMap<EventUserDto, EventUser>()
                 .ForMember(dest => dest.RowKey, opt => opt.MapFrom(src => src.UserId));
@@ -22,7 +23,7 @@ namespace SportPlanner.Repository.Profiles
             #region ModelToDto
 
             CreateMap<Event, EventDto>()
-                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => new DateTime(long.Parse(src.RowKey))))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.RowKey))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => new AddressDto { Id = src.AddressId }));
 
             CreateMap<EventUser, EventUserDto>()

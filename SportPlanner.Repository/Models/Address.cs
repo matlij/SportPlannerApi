@@ -2,7 +2,7 @@
 
 namespace SportPlanner.DataLayer.Models
 {
-    public class Address : TableEntityBase
+    public class Address : TableEntity
     {
         public double Longitude { get; set; }
         public double Latitude { get; set; }

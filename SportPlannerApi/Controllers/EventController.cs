@@ -1,6 +1,4 @@
 using SportPlanner.Repository.Interfaces;
-using SportPlanner.Repository.Models.Static;
-using System;
 
 namespace SportPlannerFunctionApi;
 
@@ -50,16 +48,16 @@ public class EventController
         return req.ToResponse(crudResult, _logger);
     }
 
-    //[Function("UpdateEvent")]
-    //public async Task<HttpResponseData> UpdateEvent([HttpTrigger(AuthorizationLevel.Function, "put", Route = "event/{id}")] HttpRequestData req, DateTime id)
-    //{
-    //    var requestBody = await req.ReadFromJsonAsync<EventDto>();
-    //    requestBody.Date = id;
+    [Function("UpdateEvent")]
+    public async Task<HttpResponseData> UpdateEvent([HttpTrigger(AuthorizationLevel.Function, "put", Route = "event/{id}")] HttpRequestData req, DateTime id)
+    {
+        var requestBody = await req.ReadFromJsonAsync<EventDto>();
+        requestBody.Date = id;
 
-    //    var crudResult = await _eventService.Upsert(requestBody);
+        var result = await _eventService.Update(requestBody);
 
-    //    return req.ToResponse(crudResult, _logger);
-    //}
+        return req.ToResponse(result.result, _logger);
+    }
 
     //[Function("DeleteEvent")]
     //public async Task<HttpResponseData> DeleteEvent([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "event/{id}")] HttpRequestData req, DateTime id)

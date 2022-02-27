@@ -3,7 +3,7 @@ using Azure;
 
 namespace SportPlanner.Repository.Models.Abstract
 {
-    public class TableEntityBase : ITableEntity
+    public class TableEntity : ITableEntity
     {
         public string PartitionKey { get; set; }
         public string RowKey { get; set; }

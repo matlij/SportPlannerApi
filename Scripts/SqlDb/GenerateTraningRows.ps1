@@ -23,7 +23,8 @@ function PostToApi {
     )
     
     $body = [ordered]@{
-        date      = $date
+        id        = (New-Guid).Guid
+        date      = Get-Date -Month $date.Month -Day $date.Day -Year $date.Year -Hour 20 -Minute 0 -Second 0 -Millisecond 0
         eventType = 1
         address   = @{
             id = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -36,16 +37,17 @@ function PostToApi {
         }
     }
 
-    $response = Invoke-RestMethod -Uri 'https://sportplannerapi.azurewebsites.net/api/event' -Method 'POST' -Body (ConvertTo-Json $body -Depth 32) -ContentType 'application/json' -Headers @{ 'x-functions-key' = 'OlEfvbvK6YHrBpQa8tIycbz49AR/mgasjZryR3f96TdyXb/ZsEWwaA==' }
-
-    Write-Output $response
+    # $url = 'https://sportplannerapi.azurewebsites.net/api/event'
+    $url = 'http://localhost:7071/api/event'
+    $bodyJson = (ConvertTo-Json $body -Depth 32)
+    
+    Write-Output "Storing event: $bodyJson"    
+    Invoke-RestMethod -Uri $url -Method 'POST' -Body $bodyJson -ContentType 'application/json' -Headers @{ 'x-functions-key' = 'OlEfvbvK6YHrBpQa8tIycbz49AR/mgasjZryR3f96TdyXb/ZsEWwaA==' }
 }
 
 for ($i = 0; $i -lt 25; $i++) {
     $date = Get-date
     $date = $date.AddDays(7 * $i + 2)
-
-    Write-Output "Storing event with date: $date"
 
     PostToApi $date
 }

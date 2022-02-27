@@ -70,5 +70,20 @@ namespace SportPlanner.Repository.Services
 
             return new(CrudResult.Ok, entityDto);
         }
+
+        public async Task<(CrudResult result, EventDto dto)> Update(EventDto entityDto)
+        {
+            try
+            {
+                var entity = _mapper.Map<Event>(entityDto);
+                await _eventRepository.Client.UpdateEntityAsync(entity, ETag.All);
+            }
+            catch (RequestFailedException e) when (e.Status == (int)HttpStatusCode.NotFound)
+            {
+                return new(CrudResult.NotFound, entityDto);
+            }
+
+            return new(CrudResult.Ok, entityDto);
+        }
     }
 }

@@ -7,4 +7,5 @@ public interface IEventService
 {
     Task<(CrudResult result, EventDto dto)> Add(EventDto entityDto);
     Task<IEnumerable<EventDto>> GetAll();
+    Task<(CrudResult result, EventDto dto)> Update(EventDto entityDto);
 }
