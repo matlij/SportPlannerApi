@@ -13,7 +13,7 @@ namespace SportPlanner.Repository.Profiles
             CreateMap<EventDto, Event>()
                 .ForMember(dest => dest.AddressId, opt => opt.MapFrom(src => src.Address != null ? (Guid?)src.Address.Id : null))
                 .ForMember(dest => dest.RowKey, opt => opt.MapFrom(src => src.Id.ToString()))
-                .ForMember(dest => dest.PartitionKey, opt => opt.MapFrom(src => src.Date.Date.ToShortDateString()));
+                .ForMember(dest => dest.PartitionKey, opt => opt.MapFrom(src => src.Date.ToString("yyyyMMdd")));
 
             CreateMap<EventUserDto, EventUser>()
                 .ForMember(dest => dest.RowKey, opt => opt.MapFrom(src => src.UserId));

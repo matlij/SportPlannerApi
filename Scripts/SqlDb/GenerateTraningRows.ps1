@@ -22,19 +22,26 @@ function PostToApi {
         [datetime]$date
     )
     
-    $body = [ordered]@{
+    $body = @{
         id        = (New-Guid).Guid
         date      = Get-Date -Month $date.Month -Day $date.Day -Year $date.Year -Hour 20 -Minute 0 -Second 0 -Millisecond 0
         eventType = 1
         address   = @{
             id = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         }
-        users     = [array][ordered]@{
-            userId    = "0cafdfe9-614f-495b-b672-61508baa3dbc"
-            userName  = "Matte"
-            userReply = 1
-            isOwner   = $true
-        }
+        users     = @(
+            @{
+                userId    = "0cafdfe9-614f-495b-b672-61508baa3dbc"
+                userName  = "mattiaslij@gmail.com"
+                userReply = 1
+                isOwner   = $true
+            },
+            @{
+                userId    = "937ac36b-c115-4574-9b41-d7a8b1c65cfd"
+                userName  = "dev@mattiasmorell.se"
+                isOwner   = $false
+            }
+        )
     }
 
     # $url = 'https://sportplannerapi.azurewebsites.net/api/event'
@@ -45,9 +52,9 @@ function PostToApi {
     Invoke-RestMethod -Uri $url -Method 'POST' -Body $bodyJson -ContentType 'application/json' -Headers @{ 'x-functions-key' = 'OlEfvbvK6YHrBpQa8tIycbz49AR/mgasjZryR3f96TdyXb/ZsEWwaA==' }
 }
 
-for ($i = 0; $i -lt 25; $i++) {
+for ($i = 0; $i -lt 10; $i++) {
     $date = Get-date
-    $date = $date.AddDays(7 * $i + 2)
+    $date = $date.AddDays(7 * $i + 1)
 
     PostToApi $date
 }
