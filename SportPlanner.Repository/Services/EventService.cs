@@ -27,10 +27,10 @@ namespace SportPlanner.Repository.Services
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<EventDto>> GetAll()
+        public async Task<IEnumerable<EventDto>> GetAll(DateTimeOffset from)
         {
             var events = new List<EventDto>();
-            await foreach (var @event in _eventRepository.Client.QueryAsync<Event>())
+            await foreach (var @event in _eventRepository.Client.QueryAsync<Event>(x => x.Date >= from))
             {
                 var users = await _eventUserRepository.Client.QueryAsync<EventUser>(x => x.PartitionKey == @event.RowKey)
                     .GetFromResponse();
@@ -55,7 +55,7 @@ namespace SportPlanner.Repository.Services
                 var entity = _mapper.Map<Event>(entityDto);
                 await _eventRepository.Client.AddEntityAsync(entity);
 
-                var addUserTransaction = entityDto.Users.Select(u => 
+                var addUserTransaction = entityDto.Users.Select(u =>
                 {
                     var user = _mapper.Map<EventUser>(u);
                     user.PartitionKey = entity.RowKey;

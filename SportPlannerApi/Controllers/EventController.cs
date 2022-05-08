@@ -19,10 +19,18 @@ public class EventController
     {
         var query = HttpUtility.ParseQueryString(req.Url.Query);
         string userId = query["userId"];
+
+        var from = query["from"];
+        if (!DateTimeOffset.TryParse(from, out var fromDate))
+        {
+            fromDate = new DateTimeOffset(new DateTime(2000, 1, 1));
+            _logger.LogDebug($"Failed to parse from date parameter {from}. Settings from date to {fromDate}");
+        }
+
         string limit = query["limit"];
         var limitParsed = string.IsNullOrEmpty(limit) ? 100 : int.Parse(limit);
 
-        var result = await _eventService.GetAll();
+        var result = await _eventService.GetAll(fromDate);
         return await req.OkObjectResponse(result);
     }
 
