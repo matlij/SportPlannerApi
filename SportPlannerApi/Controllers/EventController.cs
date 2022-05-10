@@ -1,4 +1,5 @@
 using SportPlanner.Repository.Interfaces;
+using SportPlanner.Repository.Models.Static;
 
 namespace SportPlannerFunctionApi;
 
@@ -34,18 +35,18 @@ public class EventController
         return await req.OkObjectResponse(result);
     }
 
-    //[Function("GetEvent")]
-    //public async Task<HttpResponseData> GetEvent([HttpTrigger(AuthorizationLevel.Function, "get", Route = "event/{id}")] HttpRequestData req, DateTime id)
-    //{
-    //    var entity = await _eventService.Get<EventDto>(CloudTableConstants.PartitionKeyEvent, id.Ticks.ToString());
+    [Function("GetEvent")]
+    public async Task<HttpResponseData> GetEvent([HttpTrigger(AuthorizationLevel.Function, "get", Route = "event/{id}")] HttpRequestData req, Guid id)
+    {
+        var entity = await _eventService.Get(CloudTableConstants.PartitionKeyEvent, id.ToString());
 
-    //    if (entity is null)
-    //    {
-    //        return req.NotFoundResponse();
-    //    }
+        if (entity is null)
+        {
+            return req.NotFoundResponse();
+        }
 
-    //    return await req.OkObjectResponse(entity);
-    //}
+        return await req.OkObjectResponse(entity);
+    }
 
     [Function("AddEvent")]
     public async Task<HttpResponseData> AddEvent([HttpTrigger(AuthorizationLevel.Function, "post", Route = "event")] HttpRequestData req)

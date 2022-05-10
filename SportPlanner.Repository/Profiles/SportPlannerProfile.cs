@@ -2,6 +2,7 @@
 using SportPlanner.ModelsDto;
 using SportPlanner.Repository.Models;
 using SportPlanner.Repository.Models.Extensions;
+using SportPlanner.Repository.Models.Static;
 
 namespace SportPlanner.Repository.Profiles
 {
@@ -14,7 +15,7 @@ namespace SportPlanner.Repository.Profiles
             CreateMap<EventDto, Event>()
                 .ForMember(dest => dest.AddressId, opt => opt.MapFrom(src => src.Address != null ? (Guid?)src.Address.Id : null))
                 .ForMember(dest => dest.RowKey, opt => opt.MapFrom(src => src.Id.ToString()))
-                .ForMember(dest => dest.PartitionKey, opt => opt.MapFrom(src => src.Date.ToEventPartitionKeyString()));
+                .ForMember(dest => dest.PartitionKey, opt => opt.MapFrom( src => CloudTableConstants.PartitionKeyEvent));
 
             CreateMap<EventUserDto, EventUser>()
                 .ForMember(dest => dest.RowKey, opt => opt.MapFrom(src => src.UserId));

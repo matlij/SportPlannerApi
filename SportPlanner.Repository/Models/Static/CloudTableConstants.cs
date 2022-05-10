@@ -4,5 +4,4 @@
     {
         public const string PartitionKeyEvent = "BandydosFloorball";
     }
-
 }

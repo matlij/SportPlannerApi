@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Azure;
 using Azure.Data.Tables;
+using Microsoft.Extensions.Logging;
+using SportPlanner.DataLayer.Models;
 using SportPlanner.ModelsDto;
 using SportPlanner.ModelsDto.Enums;
 using SportPlanner.Repository.Interfaces;
@@ -22,9 +24,28 @@ namespace SportPlanner.Repository.Services
             _eventUserRepository = eventUserRepository;
         }
 
-        public async Task<EventDto> Get<EventDto>(string partitionKey, string rowKey)
+        public async Task<EventDto?> Get(string partitionKey, string rowKey)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(partitionKey))
+            {
+                throw new ArgumentException($"'{nameof(partitionKey)}' cannot be null or empty.", nameof(partitionKey));
+            }
+
+            if (string.IsNullOrEmpty(rowKey))
+            {
+                throw new ArgumentException($"'{nameof(rowKey)}' cannot be null or empty.", nameof(rowKey));
+            }
+
+            try
+            {
+                var response = await _eventRepository.Client.GetEntityAsync<Event>(partitionKey, rowKey);
+
+                return await CreateEventDto(response.Value);
+            }
+            catch (RequestFailedException e) when (e.Status == (int)HttpStatusCode.NotFound)
+            {
+                return default;
+            }
         }
 
         public async Task<IEnumerable<EventDto>> GetAll(DateTimeOffset from)
@@ -32,11 +53,7 @@ namespace SportPlanner.Repository.Services
             var events = new List<EventDto>();
             await foreach (var @event in _eventRepository.Client.QueryAsync<Event>(x => x.Date >= from))
             {
-                var users = await _eventUserRepository.Client.QueryAsync<EventUser>(x => x.PartitionKey == @event.RowKey)
-                    .GetFromResponse();
-
-                var eventDto = _mapper.Map<EventDto>(@event);
-                eventDto.Users = _mapper.Map<IEnumerable<EventUserDto>>(users);
+                var eventDto = await CreateEventDto(@event);
                 events.Add(eventDto);
             }
 
@@ -84,6 +101,17 @@ namespace SportPlanner.Repository.Services
             }
 
             return new(CrudResult.Ok, entityDto);
+        }
+
+        private async Task<EventDto> CreateEventDto(Event @event)
+        {
+            var users = await _eventUserRepository.Client
+                .QueryAsync<EventUser>(x => x.PartitionKey == @event.RowKey)
+                .GetFromResponse();
+
+            var eventDto = _mapper.Map<EventDto>(@event);
+            eventDto.Users = _mapper.Map<IEnumerable<EventUserDto>>(users);
+            return eventDto;
         }
     }
 }
