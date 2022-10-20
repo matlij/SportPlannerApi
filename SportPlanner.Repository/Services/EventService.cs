@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Azure;
 using Azure.Data.Tables;
-using Microsoft.Extensions.Logging;
-using SportPlanner.DataLayer.Models;
 using SportPlanner.ModelsDto;
 using SportPlanner.ModelsDto.Enums;
 using SportPlanner.Repository.Interfaces;

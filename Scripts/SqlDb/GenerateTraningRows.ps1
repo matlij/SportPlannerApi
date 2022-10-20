@@ -31,15 +31,10 @@ function PostToApi {
         }
         users     = @(
             @{
-                userId    = "0cafdfe9-614f-495b-b672-61508baa3dbc"
-                userName  = "mattiaslij@gmail.com"
-                userReply = 1
-                isOwner   = $true
-            },
-            @{
                 userId    = "937ac36b-c115-4574-9b41-d7a8b1c65cfd"
                 userName  = "dev@mattiasmorell.se"
-                isOwner   = $false
+                userReply = 1
+                isOwner   = $true
             }
         )
     }
@@ -54,7 +49,7 @@ function PostToApi {
 
 for ($i = 0; $i -lt 10; $i++) {
     $date = Get-date
-    $date = $date.AddDays(7 * $i + 1)
+    $date = $date.AddDays(7 * $i + 5)
 
     PostToApi $date
 }

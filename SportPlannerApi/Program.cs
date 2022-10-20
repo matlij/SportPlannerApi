@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -13,23 +14,25 @@ public class Program
 
     public static IHostBuilder CreateHostBuilder(string[] args)
     {
-        var cloudTableConnectionString = Environment.GetEnvironmentVariable("cloudTableConnectionString");
+        //var cloudTableConnectionString = Environment.GetEnvironmentVariable("cloudTableConnectionString");
 
         return Host.CreateDefaultBuilder()
             .ConfigureFunctionsWorkerDefaults()
-            .ConfigureServices(s =>
+            .ConfigureServices((context, services) =>
             {
-                s.AddAutoMapper(typeof(SportPlannerProfile));
+                services.AddAutoMapper(typeof(SportPlannerProfile));
 
-                s.TryAddTransient<IEventService, EventService>();
-                s.TryAddTransient<ICloudTableClient<Event>, CloudTableClient<Event>>();
-                s.TryAddTransient<ICloudTableClient<EventUser>, CloudTableClient<EventUser>>();
-                s.Configure<CloudTableOptions<Event>>(o =>
+                services.TryAddTransient<IEventService, EventService>();
+                services.TryAddTransient<ICloudTableClient<Event>, CloudTableClient<Event>>();
+                services.TryAddTransient<ICloudTableClient<EventUser>, CloudTableClient<EventUser>>();
+
+                var cloudTableConnectionString = context.Configuration.GetConnectionString("StorageTable");
+                services.Configure<CloudTableOptions<Event>>(o =>
                 {
                     o.ConnectionString = cloudTableConnectionString;
                     o.TableName = "Event";
                 });
-                s.Configure<CloudTableOptions<EventUser>>(o =>
+                services.Configure<CloudTableOptions<EventUser>>(o =>
                 {
                     o.ConnectionString = cloudTableConnectionString;
                     o.TableName = "EventUser";
