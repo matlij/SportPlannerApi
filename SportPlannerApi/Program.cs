@@ -1,4 +1,3 @@
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -14,8 +13,6 @@ public class Program
 
     public static IHostBuilder CreateHostBuilder(string[] args)
     {
-        SqlAuthenticationProvider.SetProvider(SqlAuthenticationMethod.ActiveDirectoryInteractive, new SqlAppAuthenticationProvider());
-
         var cloudTableConnectionString = Environment.GetEnvironmentVariable("cloudTableConnectionString");
 
         return Host.CreateDefaultBuilder()
