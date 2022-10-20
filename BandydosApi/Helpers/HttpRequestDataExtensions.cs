@@ -36,11 +36,11 @@ public static class HttpRequestDataExtensions
 
     public static async Task<HttpResponseData> ValidationResponse(this HttpRequestData request,
         IDictionary<string, string[]> errors,
-        string detail = null,
-        string instance = null,
+        string? detail = null,
+        string? instance = null,
         int? statusCode = null,
-        string title = null,
-        string type = null)
+        string? title = null,
+        string? type = null)
     {
         var problemDetails = new ValidationProblemDetails(errors)
         {

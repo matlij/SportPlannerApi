@@ -1,5 +1,6 @@
 using SportPlanner.Repository.Interfaces;
 using SportPlanner.Repository.Models.Static;
+using System.Net;
 
 namespace BandydosApi.Functions;
 
@@ -61,6 +62,11 @@ public class EventController
     public async Task<HttpResponseData> UpdateEvent([HttpTrigger(AuthorizationLevel.Function, "put", Route = "event/{id}")] HttpRequestData req, DateTime id)
     {
         var requestBody = await req.ReadFromJsonAsync<EventDto>();
+        if (requestBody is null)
+        {
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
+
         requestBody.Date = id;
 
         var result = await _eventService.Update(requestBody);
