@@ -27,7 +27,7 @@ public class EventUserController
 
         try
         {
-            await _eventUserRepository.Client.UpdateEntityAsync(eventUser, ETag.All);
+            await _eventUserRepository.Client.UpsertEntityAsync(eventUser);
         }
         catch (RequestFailedException e) when (e.Status == (int)HttpStatusCode.NotFound)
         {

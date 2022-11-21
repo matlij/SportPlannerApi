@@ -4,7 +4,7 @@ namespace SportPlanner.ModelsDto
 {
     public class EventUserDto
     {
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public UserReply UserReply { get; set; }
         public bool IsOwner { get; set; }
