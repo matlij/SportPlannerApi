@@ -1,5 +1,4 @@
 ﻿using SportPlanner.Repository.Models.Abstract;
-using SportPlanner.Repository.Models.Static;
 
 namespace SportPlanner.Repository.Models
 {
@@ -12,7 +11,7 @@ namespace SportPlanner.Repository.Models
 
     public class EventUser : TableEntity
     {
-        public string UserName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
         public int UserReply { get; set; }
         public bool IsOwner { get; set; }
     }

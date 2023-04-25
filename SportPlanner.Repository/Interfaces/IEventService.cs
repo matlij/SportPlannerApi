@@ -5,7 +5,7 @@ namespace SportPlanner.Repository.Interfaces;
 
 public interface IEventService
 {
-    Task<(CrudResult result, EventDto dto)> Add(EventDto entityDto);
+    Task<(CrudResult result, EventDto dto)> Add(CreateEventDto entityDto);
     Task<EventDto?> Get(string partitionKey, string rowKey);
     Task<IEnumerable<EventDto>> GetAll(DateTimeOffset from);
     Task<(CrudResult result, EventDto dto)> Update(EventDto entityDto);

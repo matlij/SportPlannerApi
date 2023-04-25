@@ -39,17 +39,28 @@ function PostToApi {
         )
     }
 
-    # $url = 'https://sportplannerapi.azurewebsites.net/api/event'
-    $url = 'http://localhost:7071/api/event'
+    $url = 'https://bandydosapi.azurewebsites.net/api/event?code=booHUFPzV2zTqvMim2JNioFSV8Q751OLTix_lRDOUKHUAzFusPWHCA=='
+    # $url = 'http://localhost:7071/api/event'
     $bodyJson = (ConvertTo-Json $body -Depth 32)
-    
+
     Write-Output "Storing event: $bodyJson"    
-    Invoke-RestMethod -Uri $url -Method 'POST' -Body $bodyJson -ContentType 'application/json' -Headers @{ 'x-functions-key' = 'OlEfvbvK6YHrBpQa8tIycbz49AR/mgasjZryR3f96TdyXb/ZsEWwaA==' }
+    $response = Invoke-RestMethod -Uri $url -Method 'POST' -Body $bodyJson -ContentType 'application/json'
+
+    $response
 }
 
-for ($i = 0; $i -lt 10; $i++) {
-    $date = Get-date
-    $date = $date.AddDays(7 * $i + 5)
+function GetNextTuesday {
+    $nextTuesday = Get-date
+    while ($nextTuesday.DayOfWeek -ne 'Tuesday') {
+        $nextTuesday = $nextTuesday.AddDays(1)
+    }
 
+    return (Get-Date -Year $nextTuesday.Year -Month $nextTuesday.Month -Day $nextTuesday.Day -Hour 20 -Minute 0 -Second 0)
+}
+
+$date = GetNextTuesday
+
+for ($i = 0; $i -lt 18; $i++) {    
     PostToApi $date
+    $date = $date.AddDays(7)
 }

@@ -1,17 +1,19 @@
+using SportPlanner.Repository.Interfaces;
+using System.Net;
+using System.Text.Json;
+
 namespace BandydosApi.Functions;
 
 public class UserController
 {
-    //private readonly ILogger<UserController> _logger;
-    //private readonly IRepository<User> _dataAccess;
-    //private readonly IUserService _userService;
+    private readonly ILogger<UserController> _logger;
+    private readonly IUserService _userService;
 
-    //public UserController(ILoggerFactory loggerFactory, IRepository<User> dataAccess, IUserService userService)
-    //{
-    //    _logger = loggerFactory.CreateLogger<UserController>();
-    //    _dataAccess = dataAccess ?? throw new ArgumentNullException(nameof(dataAccess));
-    //    _userService = userService;
-    //}
+    public UserController(ILoggerFactory loggerFactory, IUserService userService)
+    {
+        _logger = loggerFactory.CreateLogger<UserController>();
+        _userService = userService;
+    }
 
     //[Function("GetAllUsers")]
     //public async Task<HttpResponseData> GetAllUsers(
@@ -35,14 +37,19 @@ public class UserController
     //    return await req.OkObjectResponse(entity);
     //}
 
-    //[Function("AddUser")]
-    //public async Task<HttpResponseData> AddUser([HttpTrigger(AuthorizationLevel.Function, "post", Route = "user")] HttpRequestData req)
-    //{
-    //    var requestBody = await req.ReadFromJsonAsync<UserDto>();
-    //    var (crudResult, _) = await _userService.AddUser(requestBody);
+    [Function("AddUser")]
+    public async Task<HttpResponseData> AddUser([HttpTrigger(AuthorizationLevel.Function, "post", Route = "user")] HttpRequestData req)
+    {
+        var requestBody = await req.ReadFromJsonAsync<UserDto>();
+        if (requestBody is null)
+        {
+            _logger.LogWarning("Failed to parse request {req}", JsonSerializer.Serialize(req.Body));
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
+        var (crudResult, _) = await _userService.AddUser(requestBody);
 
-    //    return req.ToResponse(crudResult, _logger);
-    //}
+        return req.ToResponse(crudResult, _logger);
+    }
 
     //[Function("UpdateUser")]
     //public async Task<HttpResponseData> UpdateUser([HttpTrigger(AuthorizationLevel.Function, "put", Route = "user/{id}")] HttpRequestData req, Guid id)

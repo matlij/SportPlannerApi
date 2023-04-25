@@ -1,6 +1,6 @@
 ﻿using SportPlanner.Repository.Models.Abstract;
 
-namespace SportPlanner.DataLayer.Models
+namespace SportPlanner.Repository.Models
 {
     public class Address : TableEntity
     {

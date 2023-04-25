@@ -52,7 +52,12 @@ public class EventController
     [Function("AddEvent")]
     public async Task<HttpResponseData> AddEvent([HttpTrigger(AuthorizationLevel.Function, "post", Route = "event")] HttpRequestData req)
     {
-        var requestBody = await req.ReadFromJsonAsync<EventDto>();
+        var requestBody = await req.ReadFromJsonAsync<CreateEventDto>();
+        if (requestBody is null)
+        {
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
+
         var (crudResult, _) = await _eventService.Add(requestBody);
 
         return req.ToResponse(crudResult, _logger);

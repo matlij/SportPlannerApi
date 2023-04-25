@@ -1,7 +1,6 @@
 ﻿using SportPlanner.Repository.Models.Abstract;
-using System.Collections.Generic;
 
-namespace SportPlanner.DataLayer.Models
+namespace SportPlanner.Repository.Models
 {
     public class User : TableEntity
     {

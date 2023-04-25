@@ -14,12 +14,14 @@ namespace SportPlanner.Repository.Services
         private readonly IMapper _mapper;
         private readonly ICloudTableClient<Event> _eventRepository;
         private readonly ICloudTableClient<EventUser> _eventUserRepository;
+        private readonly IGraphService _graphService;
 
-        public EventService(IMapper mapper, ICloudTableClient<Event> eventRepository, ICloudTableClient<EventUser> eventUserRepository)
+        public EventService(IMapper mapper, ICloudTableClient<Event> eventRepository, ICloudTableClient<EventUser> eventUserRepository, IGraphService graphService)
         {
             _mapper = mapper;
             _eventRepository = eventRepository;
             _eventUserRepository = eventUserRepository;
+            _graphService = graphService;
         }
 
         public async Task<EventDto?> Get(string partitionKey, string rowKey)
@@ -63,27 +65,23 @@ namespace SportPlanner.Repository.Services
             throw new NotImplementedException();
         }
 
-        public async Task<(CrudResult result, EventDto dto)> Add(EventDto entityDto)
+        public async Task<(CrudResult result, EventDto dto)> Add(CreateEventDto entityDto)
         {
             try
             {
                 var entity = _mapper.Map<Event>(entityDto);
                 await _eventRepository.Client.AddEntityAsync(entity);
 
-                var addUserTransaction = entityDto.Users.Select(u =>
-                {
-                    var user = _mapper.Map<EventUser>(u);
-                    user.PartitionKey = entity.RowKey;
-                    return new TableTransactionAction(TableTransactionActionType.Add, user);
-                });
-                await _eventUserRepository.Client.SubmitTransactionAsync(addUserTransaction);
+                var eventUsers = await AddEventUsers(entity.RowKey);
+
+                var created = _mapper.Map<EventDto>(entityDto);
+                created.Users = eventUsers?.Select(u => _mapper.Map<EventUserDto>(u)) ?? new List<EventUserDto>();
+                return new(CrudResult.Ok, created);
             }
             catch (RequestFailedException e) when (e.Status == (int)HttpStatusCode.Conflict)
             {
-                return new(CrudResult.AlreadyExists, entityDto);
+                return new(CrudResult.AlreadyExists, _mapper.Map<EventDto>(entityDto));
             }
-
-            return new(CrudResult.Ok, entityDto);
         }
 
         public async Task<(CrudResult result, EventDto dto)> Update(EventDto entityDto)
@@ -110,6 +108,20 @@ namespace SportPlanner.Repository.Services
             var eventDto = _mapper.Map<EventDto>(@event);
             eventDto.Users = _mapper.Map<IEnumerable<EventUserDto>>(users);
             return eventDto;
+        }
+
+        private async Task<IEnumerable<EventUser>> AddEventUsers(string eventId)
+        {
+            var eventUsers = (await _graphService.GetUsers())?.Select(u => _mapper.Map<EventUser>(u));
+
+            var addUserTransaction = eventUsers?.Select(u =>
+            {
+                u.PartitionKey = eventId;
+                return new TableTransactionAction(TableTransactionActionType.Add, u);
+            });
+            await _eventUserRepository.Client.SubmitTransactionAsync(addUserTransaction);
+
+            return eventUsers ?? Enumerable.Empty<EventUser>();
         }
     }
 }

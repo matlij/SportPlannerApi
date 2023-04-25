@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
+using Azure;
 using Microsoft.Extensions.Logging;
-using SportPlanner.DataLayer.Models;
 using SportPlanner.ModelsDto;
 using SportPlanner.ModelsDto.Enums;
-using SportPlanner.ModelsDto.Extensions;
 using SportPlanner.Repository.Interfaces;
 using SportPlanner.Repository.Models;
-using SportPlanner.Repository.Models.Static;
+using System.Net;
 
 namespace SportPlanner.Repository.Services;
 
@@ -28,26 +27,45 @@ public class UserService : IUserService
     public async Task<(CrudResult result, UserDto dto)> AddUser(UserDto userDto)
     {
         var user = _mapper.Map<User>(userDto);
-        await _userRepository.Client.AddEntityAsync(user);
+        CrudResult crudResult;
+        try
+        {
+            await _userRepository.Client.AddEntityAsync(user);
+            crudResult = CrudResult.Ok;
+        }
+        catch (RequestFailedException e) when (e.Status == (int)HttpStatusCode.Conflict)
+        {
+            crudResult = CrudResult.AlreadyExists;
+        }
+
         await AddUserToFutureEvents(user);
 
-        return new(CrudResult.Ok, userDto);
+        return new(crudResult, userDto);
     }
 
     private async Task AddUserToFutureEvents(User user)
     {
-        var events = _eventRepository.Client.QueryAsync<EventUser>(e => long.Parse(e.PartitionKey) > DateTime.Now.Ticks);
+        var now = DateTime.Now.Ticks.ToString();
+        var events = _eventRepository.Client.QueryAsync<EventUser>(filter: $"PartitionKey gt '{now}'");
+
         await foreach (var @event in events)
         {
-            var eventUser = new EventUser
+            try
             {
-                PartitionKey = @event.RowKey,
-                RowKey = user.RowKey,
-                UserName = user.Name,
-            };
-            await _eventRepository.Client.UpsertEntityAsync(eventUser);
+                var eventUser = new EventUser
+                {
+                    PartitionKey = @event.RowKey,
+                    RowKey = user.RowKey,
+                    Name = user.Name,
+                };
+                var response = await _eventRepository.Client.UpsertEntityAsync(eventUser);
 
-            _logger.LogDebug($"Add user to Event {@event.RowKey}");
+                //_logger.LogInformation("Attempt to add user {userId} to Event {eventId} (date {eventdate}) resulted in status {status}", eventUser.RowKey, @event.RowKey, response.Status);
+            }
+            catch (RequestFailedException e)
+            {
+                _logger.LogWarning(e, "Add user {userId} to Event {eventId} failed", @event.RowKey, user.RowKey);
+            }
         }
     }
 }

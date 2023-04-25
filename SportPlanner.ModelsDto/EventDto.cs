@@ -10,4 +10,12 @@ namespace SportPlanner.ModelsDto
         public AddressDto Address { get; set; } = new AddressDto();
         public IEnumerable<EventUserDto> Users { get; set; } = Enumerable.Empty<EventUserDto>();
     }
+
+    public class CreateEventDto
+    {
+        public Guid Id { get; } = Guid.NewGuid();
+        public DateTimeOffset Date { get; set; }
+        public EventType EventType { get; set; }
+        public AddressDto Address { get; set; } = new AddressDto();
+    }
 }
