@@ -29,14 +29,6 @@ function PostToApi {
         address   = @{
             id = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         }
-        users     = @(
-            @{
-                userId    = "937ac36b-c115-4574-9b41-d7a8b1c65cfd"
-                userName  = "dev@mattiasmorell.se"
-                userReply = 1
-                isOwner   = $true
-            }
-        )
     }
 
     $url = 'https://bandydosapi.azurewebsites.net/api/event?code=booHUFPzV2zTqvMim2JNioFSV8Q751OLTix_lRDOUKHUAzFusPWHCA=='
@@ -45,8 +37,6 @@ function PostToApi {
 
     Write-Output "Storing event: $bodyJson"    
     $response = Invoke-RestMethod -Uri $url -Method 'POST' -Body $bodyJson -ContentType 'application/json'
-
-    $response
 }
 
 function GetNextTuesday {
@@ -60,7 +50,7 @@ function GetNextTuesday {
 
 $date = GetNextTuesday
 
-for ($i = 0; $i -lt 18; $i++) {    
+for ($i = 0; $i -lt 8; $i++) {    
     PostToApi $date
     $date = $date.AddDays(7)
 }

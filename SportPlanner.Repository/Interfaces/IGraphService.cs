@@ -4,4 +4,5 @@ public interface IGraphService
 {
     Task<IEnumerable<UserDto>?> GetUsers();
     Task<IEnumerable<UserDto>?> GetUsersAssignedToServicePrincipal(string principalId);
+    Task<UserDto?> UpdateUser(UserDto updatedUser);
 }

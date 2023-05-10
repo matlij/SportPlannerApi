@@ -1,6 +1,7 @@
 ﻿using Azure.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
+using Microsoft.Graph.Models;
 using SportPlanner.ModelsDto;
 
 namespace SportPlanner.Repository.Services
@@ -49,11 +50,32 @@ namespace SportPlanner.Repository.Services
 
             var result = await graphClient.Users.GetAsync();
 
-            return result?.Value?.Select(x => new UserDto()
+            return result?.Value?.Select(ToUserDto);
+        }
+
+        public async Task<UserDto?> UpdateUser(UserDto updatedUser)
+        {
+            var graphClient = CreateClient();
+
+            var user = await graphClient.Users[updatedUser.Id].GetAsync();
+            if (user is null)
             {
-                Name = x.DisplayName ?? string.Empty,
-                Id = x.Id ?? string.Empty
-            });
+                throw new ArgumentException("Cannot find user with ID " + updatedUser.Id);
+            }
+
+            user.DisplayName = updatedUser.Name;
+            var result = await graphClient.Users[updatedUser.Id].PatchAsync(user);
+
+            return ToUserDto(result);
+        }
+
+        private static UserDto ToUserDto(User? result)
+        {
+            return new UserDto()
+            {
+                Name = result?.DisplayName ?? string.Empty,
+                Id = result?.Id ?? string.Empty
+            };
         }
 
         private GraphServiceClient CreateClient()

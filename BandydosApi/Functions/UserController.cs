@@ -1,3 +1,4 @@
+using SportPlanner.ModelsDto.Enums;
 using SportPlanner.Repository.Interfaces;
 using System.Net;
 using System.Text.Json;
@@ -8,11 +9,13 @@ public class UserController
 {
     private readonly ILogger<UserController> _logger;
     private readonly IUserService _userService;
+    private readonly IGraphService _graphService;
 
-    public UserController(ILoggerFactory loggerFactory, IUserService userService)
+    public UserController(ILoggerFactory loggerFactory, IUserService userService, IGraphService graphService)
     {
         _logger = loggerFactory.CreateLogger<UserController>();
         _userService = userService;
+        _graphService = graphService;
     }
 
     //[Function("GetAllUsers")]
@@ -51,15 +54,19 @@ public class UserController
         return req.ToResponse(crudResult, _logger);
     }
 
-    //[Function("UpdateUser")]
-    //public async Task<HttpResponseData> UpdateUser([HttpTrigger(AuthorizationLevel.Function, "put", Route = "user/{id}")] HttpRequestData req, Guid id)
-    //{
-    //    var requestBody = await req.ReadFromJsonAsync<UserDto>();
+    [Function("UpdateUser")]
+    public async Task<HttpResponseData> UpdateUser([HttpTrigger(AuthorizationLevel.Function, "put", Route = "user/{id}")] HttpRequestData req, Guid id)
+    {
+        var requestBody = await req.ReadFromJsonAsync<UserDto>();
+        if (requestBody is null)
+        {
+            _logger.LogWarning("Failed to parse request {req}", JsonSerializer.Serialize(req.Body));
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
 
-    //    var crudResult = await _dataAccess.Update(new GetByIdSpecification<User>(id), requestBody);
-
-    //    return req.ToResponse(crudResult, _logger);
-    //}
+        await _graphService.UpdateUser(requestBody);
+        return req.ToResponse(CrudResult.Ok, _logger);
+    }
 
     //[Function("DeleteUser")]
     //public async Task<HttpResponseData> DeleteUser([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "user/{id}")] HttpRequestData req, Guid id)
