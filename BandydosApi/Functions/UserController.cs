@@ -1,6 +1,5 @@
 using SportPlanner.ModelsDto.Enums;
 using SportPlanner.Repository.Interfaces;
-using SportPlanner.Repository.Services;
 using System.Net;
 using System.Text.Json;
 
