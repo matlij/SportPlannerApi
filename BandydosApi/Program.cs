@@ -15,6 +15,7 @@ var host = new HostBuilder()
         services.TryAddTransient<IEventService, EventService>();
         services.TryAddTransient<IUserService, UserService>();
         services.TryAddTransient<IGraphService, GraphService>();
+        services.TryAddTransient<IEventUserService, EventUserService>();
 
         services.TryAddTransient<ICloudTableClient<Event>, CloudTableClient<Event>>();
         services.TryAddTransient<ICloudTableClient<EventUser>, CloudTableClient<EventUser>>();

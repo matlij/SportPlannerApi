@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Azure;
-using Azure.Data.Tables;
 using SportPlanner.ModelsDto;
 using SportPlanner.ModelsDto.Enums;
 using SportPlanner.Repository.Interfaces;
@@ -13,15 +12,13 @@ namespace SportPlanner.Repository.Services
     {
         private readonly IMapper _mapper;
         private readonly ICloudTableClient<Event> _eventRepository;
-        private readonly ICloudTableClient<EventUser> _eventUserRepository;
-        private readonly IGraphService _graphService;
+        private readonly IEventUserService _eventUserService;
 
-        public EventService(IMapper mapper, ICloudTableClient<Event> eventRepository, ICloudTableClient<EventUser> eventUserRepository, IGraphService graphService)
+        public EventService(IMapper mapper, ICloudTableClient<Event> eventRepository, IEventUserService eventUserService)
         {
-            _mapper = mapper;
-            _eventRepository = eventRepository;
-            _eventUserRepository = eventUserRepository;
-            _graphService = graphService;
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
+            _eventUserService = eventUserService ?? throw new ArgumentNullException(nameof(eventUserService));
         }
 
         public async Task<EventDto?> Get(string partitionKey, string rowKey)
@@ -72,7 +69,7 @@ namespace SportPlanner.Repository.Services
                 var entity = _mapper.Map<Event>(entityDto);
                 await _eventRepository.Client.AddEntityAsync(entity);
 
-                var eventUsers = await AddEventUsers(entity.RowKey);
+                var eventUsers = await _eventUserService.AddAllUsersToEvent(entity.RowKey);
 
                 var created = _mapper.Map<EventDto>(entityDto);
                 created.Users = eventUsers?.Select(u => _mapper.Map<EventUserDto>(u)) ?? new List<EventUserDto>();
@@ -101,27 +98,12 @@ namespace SportPlanner.Repository.Services
 
         private async Task<EventDto> CreateEventDto(Event @event)
         {
-            var users = await _eventUserRepository.Client
-                .QueryAsync<EventUser>(x => x.PartitionKey == @event.RowKey)
-                .GetFromResponse();
-
             var eventDto = _mapper.Map<EventDto>(@event);
+
+            var users = await _eventUserService.GetFromEventId(@event.RowKey);
             eventDto.Users = _mapper.Map<IEnumerable<EventUserDto>>(users);
+
             return eventDto;
-        }
-
-        private async Task<IEnumerable<EventUser>> AddEventUsers(string eventId)
-        {
-            var eventUsers = (await _graphService.GetUsers())?.Select(u => _mapper.Map<EventUser>(u));
-
-            var addUserTransaction = eventUsers?.Select(u =>
-            {
-                u.PartitionKey = eventId;
-                return new TableTransactionAction(TableTransactionActionType.Add, u);
-            });
-            await _eventUserRepository.Client.SubmitTransactionAsync(addUserTransaction);
-
-            return eventUsers ?? Enumerable.Empty<EventUser>();
         }
     }
 }

@@ -1,5 +1,6 @@
 using SportPlanner.ModelsDto.Enums;
 using SportPlanner.Repository.Interfaces;
+using SportPlanner.Repository.Services;
 using System.Net;
 using System.Text.Json;
 
@@ -9,13 +10,18 @@ public class UserController
 {
     private readonly ILogger<UserController> _logger;
     private readonly IUserService _userService;
-    private readonly IGraphService _graphService;
+    private readonly IEventUserService _eventUserService;
 
-    public UserController(ILoggerFactory loggerFactory, IUserService userService, IGraphService graphService)
+    public UserController(ILoggerFactory loggerFactory, IUserService userService, IEventUserService eventUserService)
     {
+        if (loggerFactory is null)
+        {
+            throw new ArgumentNullException(nameof(loggerFactory));
+        }
+
         _logger = loggerFactory.CreateLogger<UserController>();
-        _userService = userService;
-        _graphService = graphService;
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _eventUserService = eventUserService ?? throw new ArgumentNullException(nameof(eventUserService));
     }
 
     //[Function("GetAllUsers")]
@@ -64,7 +70,7 @@ public class UserController
             return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
-        await _graphService.UpdateUser(requestBody);
+        await _eventUserService.Update(requestBody);
         return req.ToResponse(CrudResult.Ok, _logger);
     }
 
