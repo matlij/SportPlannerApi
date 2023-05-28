@@ -24,10 +24,13 @@ function PostToApi {
     
     $body = @{
         id        = (New-Guid).Guid
-        date      = Get-Date -Month $date.Month -Day $date.Day -Year $date.Year -Hour 20 -Minute 0 -Second 0 -Millisecond 0
+        date      = Get-Date -AsUTC -Month $date.Month -Day $date.Day -Year $date.Year -Hour 20 -Minute 0 -Second 0 -Millisecond 0
         eventType = 1
         address   = @{
             id = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            fulladdress = "Brinellvagen 38, 114 28 Stockholm"
+            longitude = 59.35216935738483
+            latitude = 18.069429251752773
         }
     }
 
