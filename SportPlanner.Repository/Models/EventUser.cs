@@ -7,5 +7,6 @@ namespace SportPlanner.Repository.Models
         public string Name { get; set; } = string.Empty;
         public int UserReply { get; set; }
         public bool IsOwner { get; set; }
+        public bool IsEquipmentManager { get; set; }
     }
 }

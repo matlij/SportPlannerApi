@@ -8,6 +8,7 @@ namespace SportPlanner.ModelsDto
         public string Name { get; set; } = string.Empty;
         public UserReply UserReply { get; set; }
         public bool IsOwner { get; set; }
+        public bool IsEquipmentManager { get; set; }
     }
 
     public enum UserReply
